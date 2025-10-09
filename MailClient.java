@@ -7,15 +7,6 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Simple UDP Mail Client.
- * Prompts the user for server IP, server port and message content, then sends
- * the message
- * as a UDP packet to the server using DatagramSocket/DatagramPacket.
- *
- * Usage:
- * java MailClient
- */
 public class MailClient {
     public static void main(String[] args) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
@@ -29,7 +20,6 @@ public class MailClient {
             System.out.println("Enter your message. Finish with an empty line:");
             StringBuilder sb = new StringBuilder();
             String line;
-            // Read multiple lines until an empty line
             while ((line = reader.readLine()) != null) {
                 if (line.isEmpty())
                     break;
@@ -42,23 +32,14 @@ public class MailClient {
                 return;
             }
 
-            // Convert message to bytes (UTF-8)
             byte[] data = message.getBytes(StandardCharsets.UTF_8);
 
-            // Resolve server IP address
             InetAddress serverAddress = InetAddress.getByName(serverIp);
 
-            // Create a DatagramPacket containing the message, addressed to server IP/port
             DatagramPacket packet = new DatagramPacket(data, data.length, serverAddress, serverPort);
 
-            // DatagramSocket used to send the UDP packet. If we don't bind it to a local
-            // port,
-            // the OS will choose an ephemeral port automatically. After sending we close
-            // it.
             try (DatagramSocket socket = new DatagramSocket()) {
                 socket.send(packet);
-                // We can display the local IP/port used for sending by inspecting the socket's
-                // local address/port
                 String localIp = socket.getLocalAddress().getHostAddress();
                 int localPort = socket.getLocalPort();
                 System.out.println("Message sent to " + serverAddress.getHostAddress() + ":" + serverPort);
